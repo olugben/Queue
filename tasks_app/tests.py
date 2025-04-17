@@ -49,7 +49,7 @@ class TaskAPITestCase(APITestCase):
             email='test@example.com',
             message='This is a test task',
             celery_task_id='dummy_task_id',  # Mock Celery task ID
-            status='PENDING'  # Initially PENDING
+            status='PENDING'  
         )
 
         # Mock the Celery result status as PENDING initially
