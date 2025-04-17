@@ -21,13 +21,13 @@ jobs:
 
 
       - name: Build Docker containers
-        run: docker-compose -f docker-compose.yml build
+        run: docker compose -f docker-compose.yml up -d --build
 
       - name: Run Tests
         run: |
-          docker-compose up -d
-          docker-compose exec web python manage.py test
-          docker-compose down
+          docker compose up -d
+          docker compose exec web python manage.py test
+          docker compose down
 
   deploy:
     name: Deploy to EC2
