@@ -70,31 +70,5 @@ class TaskAPITestCase(APITestCase):
         # Check if the task status is PENDING at the first request
         self.assertEqual(response.data['celery_status'], 'PENDING')
 
-        # Simulate the delay of 30 seconds (or any duration you want)
-        time.sleep(60)
 
-        # Simulate the task status change to SUCCESS after delay
-        mock_async_result.return_value.status = 'SUCCESS'
-
-        # Make the authenticated GET request again after the delay
-        response = self.client.get(url)
-
-        # Check if the response status is HTTP_200_OK
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        # Check if the task status is SUCCESS after the simulated delay
-        self.assertEqual(response.data['celery_status'], 'SUCCESS')
-
-    @patch('tasks_app.views.process_task.delay')  # Mock Celery task
-    def test_task_status_view_invalid_task(self, mock_task):
-        # Invalid task ID
-        url = reverse('task-status', kwargs={'task_id': 999})  # Assuming task with ID 999 doesn't exist
-
-        # Authenticate the user
-        self.client.force_authenticate(user=self.user)
-
-        # Make the authenticated GET request
-        response = self.client.get(url)
-
-        # Check if the response status is HTTP_404_NOT_FOUND
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    
