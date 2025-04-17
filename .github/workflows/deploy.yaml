@@ -45,7 +45,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
-            cd /DRFQ
+            cd DRFQ
             sudo docker compose down
             sudo docker compose pull
             sudo docker compose up -d --build
