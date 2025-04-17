@@ -1,0 +1,117 @@
+[4mGIT-SUBMODULE[24m(1)                                 Git Manual                                [4mGIT-SUBMODULE[24m(1)
+
+[1mNAME[0m
+       git-submodule - Initialize, update or inspect submodules
+
+[1mSYNOPSIS[0m
+       [4mgit[24m [4msubmodule[24m [--quiet] [--cached]
+       [4mgit[24m [4msubmodule[24m [--quiet] add [<options>] [--] <repository> [<path>]
+       [4mgit[24m [4msubmodule[24m [--quiet] status [--cached] [--recursive] [--] [<path>...]
+       [4mgit[24m [4msubmodule[24m [--quiet] init [--] [<path>...]
+       [4mgit[24m [4msubmodule[24m [--quiet] deinit [-f|--force] (--all|[--] <path>...)
+       [4mgit[24m [4msubmodule[24m [--quiet] update [<options>] [--] [<path>...]
+       [4mgit[24m [4msubmodule[24m [--quiet] set-branch [<options>] [--] <path>
+       [4mgit[24m [4msubmodule[24m [--quiet] set-url [--] <path> <newurl>
+       [4mgit[24m [4msubmodule[24m [--quiet] summary [<options>] [--] [<path>...]
+       [4mgit[24m [4msubmodule[24m [--quiet] foreach [--recursive] <command>
+       [4mgit[24m [4msubmodule[24m [--quiet] sync [--recursive] [--] [<path>...]
+       [4mgit[24m [4msubmodule[24m [--quiet] absorbgitdirs [--] [<path>...]
+
+[1mDESCRIPTION[0m
+       Inspects, updates and manages submodules.
+
+       For more information about submodules, see [1mgitsubmodules[22m(7).
+
+[1mCOMMANDS[0m
+       With no arguments, shows the status of existing submodules. Several subcommands are available to
+       perform operations on the submodules.
+
+       add [-b <branch>] [-f|--force] [--name <name>] [--reference <repository>] [--depth <depth>] [--]
+       <repository> [<path>]
+           Add the given repository as a submodule at the given path to the changeset to be committed next
+           to the current project: the current project is termed the "superproject".
+
+           <repository> is the URL of the new submodule’s origin repository. This may be either an absolute
+           URL, or (if it begins with ./ or ../), the location relative to the superproject’s default
+           remote repository (Please note that to specify a repository [4mfoo.git[24m which is located right next
+           to a superproject [4mbar.git[24m, you’ll have to use [1m../foo.git [22minstead of [1m./foo.git [22m- as one might
+           expect when following the rules for relative URLs - because the evaluation of relative URLs in
+           Git is identical to that of relative directories).
+
+           The default remote is the remote of the remote-tracking branch of the current branch. If no such
+           remote-tracking branch exists or the HEAD is detached, "origin" is assumed to be the default
+           remote. If the superproject doesn’t have a default remote configured the superproject is its own
+           authoritative upstream and the current working directory is used instead.
+
+           The optional argument <path> is the relative location for the cloned submodule to exist in the
+           superproject. If <path> is not given, the canonical part of the source repository is used
+           ("repo" for "/path/to/repo.git" and "foo" for "host.xz:foo/.git"). If <path> exists and is
+           already a valid Git repository, then it is staged for commit without cloning. The <path> is also
+           used as the submodule’s logical name in its configuration entries unless [1m--name [22mis used to
+           specify a logical name.
+
+           The given URL is recorded into [1m.gitmodules [22mfor use by subsequent users cloning the superproject.
+           If the URL is given relative to the superproject’s repository, the presumption is the
+           superproject and submodule repositories will be kept together in the same relative location, and
+           only the superproject’s URL needs to be provided. git-submodule will correctly locate the
+           submodule using the relative URL in [1m.gitmodules[22m.
+
+       status [--cached] [--recursive] [--] [<path>...]
+           Show the status of the submodules. This will print the SHA-1 of the currently checked out commit
+           for each submodule, along with the submodule path and the output of [4mgit[24m [4mdescribe[24m for the SHA-1.
+           Each SHA-1 will possibly be prefixed with [1m- [22mif the submodule is not initialized, [1m+ [22mif the
+           currently checked out submodule commit does not match the SHA-1 found in the index of the
+           containing repository and [1mU [22mif the submodule has merge conflicts.
+
+           If [1m--cached [22mis specified, this command will instead print the SHA-1 recorded in the superproject
+           for each submodule.
+
+           If [1m--recursive [22mis specified, this command will recurse into nested submodules, and show their
+           status as well.
+
+           If you are only interested in changes of the currently initialized submodules with respect to
+           the commit recorded in the index or the HEAD, [1mgit-status[22m(1) and [1mgit-diff[22m(1) will provide that
+           information too (and can also report changes to a submodule’s work tree).
+
+       init [--] [<path>...]
+           Initialize the submodules recorded in the index (which were added and committed elsewhere) by
+           setting [1msubmodule.$name.url [22min [1m.git/config[22m, using the same setting from [1m.gitmodules [22mas a
+           template. If the URL is relative, it will be resolved using the default remote. If there is no
+           default remote, the current repository will be assumed to be upstream.
+
+           Optional <path> arguments limit which submodules will be initialized. If no path is specified
+           and submodule.active has been configured, submodules configured to be active will be
+           initialized, otherwise all submodules are initialized.
+
+           It will also copy the value of [1msubmodule.$name.update[22m, if present in the [1m.gitmodules [22mfile, to
+           [1m.git/config[22m, but (1) this command does not alter existing information in [1m.git/config[22m, and (2)
+           [1msubmodule.$name.update [22mthat is set to a custom command is [1mnot [22mcopied for security reasons.
+
+           You can then customize the submodule clone URLs in [1m.git/config [22mfor your local setup and proceed
+           to [1mgit submodule update[22m; you can also just use [1mgit submodule update --init [22mwithout the explicit
+           [4minit[24m step if you do not intend to customize any submodule locations.
+
+           See the add subcommand for the definition of default remote.
+
+       deinit [-f|--force] (--all|[--] <path>...)
+           Unregister the given submodules, i.e. remove the whole [1msubmodule.$name [22msection from .git/config
+           together with their work tree. Further calls to [1mgit submodule update[22m, [1mgit submodule foreach [22mand
+           [1mgit submodule sync [22mwill skip any unregistered submodules until they are initialized again, so
+           use this command if you don’t want to have a local checkout of the submodule in your working
+           tree anymore.
+
+           When the command is run without pathspec, it errors out, instead of deinit-ing everything, to
+           prevent mistakes.
+
+           If [1m--force [22mis specified, the submodule’s working tree will be removed even if it contains local
+           modifications.
+
+           If you really want to remove a submodule from the repository and commit that use [1mgit-rm[22m(1)
+           instead. See [1mgitsubmodules[22m(7) for removal options.
+
+       update [--init] [--remote] [-N|--no-fetch] [--[no-]recommend-shallow] [-f|--force]
+       [--checkout|--rebase|--merge] [--reference <repository>] [--depth <depth>] [--recursive] [--jobs
+       <n>] [--[no-]single-branch] [--filter <filter spec>] [--] [<path>...]
+           Update the registered submodules to match what the superproject expects by cloning missing
+           submodules, fetching missing commits in submodules and updating the working tree of the
+           submodules. The "updating" can be done in several ways dep

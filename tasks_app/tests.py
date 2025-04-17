@@ -56,7 +56,7 @@ class TaskAPITestCase(APITestCase):
         mock_async_result.return_value.status = 'PENDING'
 
         # URL for task status view
-        url = reverse('task-status', kwargs={'task_id': task.id})  # Update with your URL name
+        url = reverse('task-status', kwargs={'task_id': task.id})  
 
         # Authenticate the user
         self.client.force_authenticate(user=self.user)
