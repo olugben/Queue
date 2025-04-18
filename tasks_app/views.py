@@ -17,7 +17,16 @@ from django.http import Http404
 from rest_framework.response import Response
 from rest_framework import status
 from celery.result import AsyncResult
-from .models import Task  # Import your Task model
+from .models import Task  
+
+
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
+
+@api_view(['GET'])
+def public_health_check(request):
+    return JsonResponse({'status': 'ok'}, status=200)
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
