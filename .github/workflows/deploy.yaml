@@ -44,10 +44,21 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
           script: |
+            echo "🔧 Removing old project folder"
+            rm -rf DRFQ
+
+            echo "📥 Cloning fresh copy of the repo"
+            git clone https://github.com/olugben/Queue.git DRFQ
+
             cd DRFQ
-            echo "Pulling latest code and deploying..."
-            git pull origin main
-            sudo docker system prune -f
+
+            echo "🛠️ Stopping old containers"
             sudo docker compose down
+
+            echo "🚀 Building and starting new containers"
             sudo docker compose up -d --build
 
+            echo "🧹 Cleaning up unused Docker stuff"
+            sudo docker system prune -af
+
+            echo "✅ Deployed latest version successfully"
